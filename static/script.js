@@ -1,6 +1,21 @@
 async function sendMessage(){
 
-    let message = document.getElementById("msg").value;
+    let inputField = document.getElementById("msg");
+    let message = inputField.value;
+
+    if(message.trim() === ""){
+        return;
+    }
+
+    let chatBox = document.getElementById("chat-box");
+
+    chatBox.innerHTML += `
+        <div class="message user">
+            <b>You:</b><br>${message}
+        </div>
+    `;
+
+    inputField.value = "";
 
     let response = await fetch("/chat",{
         method:"POST",
@@ -14,10 +29,20 @@ async function sendMessage(){
 
     let data = await response.json();
 
-    let chatBox = document.getElementById("chat-box");
-
     chatBox.innerHTML += `
-        <p><b>You:</b> ${message}</p>
-        <p><b>AI:</b> ${data.reply}</p>
+        <div class="message bot">
+            <b>AI:</b><br>${data.reply}
+        </div>
     `;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+document.getElementById("msg")
+.addEventListener("keypress",function(e){
+
+    if(e.key === "Enter"){
+        sendMessage();
+    }
+
+});
